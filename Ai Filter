@@ -1,0 +1,30 @@
+import requests
+import json
+
+api_key = 'sk-proj-ruhHlGEiU6Kh52MKWSTcn63LNp4z4Zrrg_VT4A'
+
+headers = {
+    'Authorization': f'Bearer {api_key}',
+    'Content-Type': 'application/json'
+}
+
+def getFilterWord(content):
+    data = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": content}
+        ]
+    }
+
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, data=json.dumps(data))
+
+    if response.status_code == 200:
+        response_data = response.json()
+        return response_data['choices'][0]['message']['content']
+    else:
+        return f"Request failed with status code {response.status_code}: {response.text}"
+
+# Example usage
+answer = getFilterWord("TestTest")
+print(answer)
