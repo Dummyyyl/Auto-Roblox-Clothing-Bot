@@ -60,9 +60,9 @@ def fetch_titles():
                 if price_in_robux not in [None, 0]:
                     paid_titles.append(title)
                 
-                # Stop once we have 20 paid titles
-                if len(paid_titles) == 20:
+                # Stop once we have 80 paid titles
+                if len(paid_titles) == 80:
                     break
 
     # Return the list of paid titles joined by commas
-    return ", ".join(paid_titles) if len(paid_titles) == 20 else None
+    return ", ".join(paid_titles) if len(paid_titles) == 80 else None
