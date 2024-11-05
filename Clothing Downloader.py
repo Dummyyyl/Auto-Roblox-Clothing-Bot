@@ -1,3 +1,8 @@
+# Takes the functions from Ai_Filter.py and GetKeyWord.py to get the most used keywords in the last week
+# It sends it to the ChatGPT Api and it returns the 3 most used keywords
+# They are used to get 3 Shirts of each keyword that can be Uploaded after
+
+
 import requests
 import os
 import json
@@ -5,6 +10,16 @@ import re  # Importing the re module for regular expressions
 from PIL import Image
 from colorama import init
 import emoji
+from Ai_Filter import getFilterWord
+from GetKeyWord import fetch_titles
+
+# Call the function and print the result
+result = fetch_titles()
+if result:
+    print(getFilterWord(result))
+else:
+    print("No paid titles found or failed to fetch data.")
+
 
 # Initialize colorama
 init()
@@ -42,14 +57,7 @@ except:
     exit()
 
 # Prompt for clothing type and keyword input
-cltype = input("Enter clothing type (Shirts or Pants): ").strip().lower()
-if cltype in ["s", "shirts", "shirt"]:
-    cltype = "Shirts"
-elif cltype in ["p", "pants", "pant"]:
-    cltype = "Pants"
-else:
-    print("Invalid clothing type input. Exiting.")
-    exit()
+cltype = "Shirts"
 keywords = input("Enter keywords for search (e.g., emo goth y2k): ").strip().replace(" ", "+").lower()
 
 # Define API endpoints for different sorting methods
