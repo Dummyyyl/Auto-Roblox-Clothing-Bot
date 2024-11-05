@@ -1,25 +1,26 @@
-# Takes the functions from Ai_Filter.py and GetKeyWord.py to get the most used keywords in the last week
-# It sends it to the ChatGPT Api and it returns the 3 most used keywords
-# They are used to get 3 Shirts of each keyword that can be Uploaded after
-
-
 import requests
 import os
 import json
-import re  # Importing the re module for regular expressions
+import re
 from PIL import Image
 from colorama import init
-import emoji
 from Ai_Filter import getFilterWord
 from GetKeyWord import fetch_titles
 
-# Call the function and print the result
+print("Running... please wait 20-30 Seconds")
+# Call the function and retrieve keywords
 result = fetch_titles()
 if result:
-    print(getFilterWord(result))
+    response = getFilterWord(result)
+    
+    # Split the response by lines to get each keyword
+    lines = response.splitlines()
+    keyword1 = lines[0].split(": ", 1)[1] if len(lines) > 0 else None
+    keyword2 = lines[1].split(": ", 1)[1] if len(lines) > 1 else None
+    keyword3 = lines[2].split(": ", 1)[1] if len(lines) > 2 else None
 else:
     print("No paid titles found or failed to fetch data.")
-
+    exit()
 
 # Initialize colorama
 init()
@@ -28,7 +29,6 @@ init()
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-# Extract specific configurations
 cookie = config["auth"]["cookie"]
 templatechanger = config["optional"]["templatechanger"]
 debugmode = config["optional"]["debugmode"]
@@ -38,15 +38,14 @@ price = config["clothing"]["price"]
 group = config["clothing"]["group"]
 description = config["clothing"]["description"]
 
-# Set up session with cookie
+# Set up session with cookie and CSRF token
 session = requests.Session()
 session.cookies[".ROBLOSECURITY"] = cookie
-
-# Set up session with CSRF token for authentication
 req = session.post("https://auth.roblox.com/")
 if "X-CSRF-Token" in req.headers:
     session.headers["X-CSRF-Token"] = req.headers["X-CSRF-Token"]
 
+# Check authentication
 try:
     user_info = session.get("https://users.roblox.com/v1/users/authenticated").json()
     user_id = user_info['id']
@@ -56,102 +55,76 @@ except:
     print("Invalid cookie. Please check your credentials.")
     exit()
 
-# Prompt for clothing type and keyword input
+# Define the keywords to search
+keywords = [keyword1, keyword2, keyword3]
 cltype = "Shirts"
-keywords = input("Enter keywords for search (e.g., emo goth y2k): ").strip().replace(" ", "+").lower()
 
-# Define API endpoints for different sorting methods
-base_url = f"https://catalog.roblox.com/v1/search/items?category=Clothing&keyword={keywords}&limit=120&maxPrice=5&minPrice=5&salesTypeFilter=1&subcategory=Classic{cltype}"
-sort_options = {
-    "1": base_url,
-    "2": f"{base_url}&sortAggregation=5&sortType=1",
-    "3": f"{base_url}&sortAggregation=3&sortType=1",
-    "4": f"{base_url}&sortAggregation=5&sortType=1",
-    "5": f"{base_url}&sortAggregation=5&sortType=2",
-    "6": f"{base_url}&sortAggregation=3&sortType=2",
-    "7": f"{base_url}&sortAggregation=1&sortType=1",
-    "8": f"{base_url}&sortType=3"
-}
-
-# Prompt for sorting method
-print("Catalog Sorts\n-[1] Relevance\n-[2] Most Favourited (all time)\n-[3] Most Favourited (past week)\n-[4] Most Favourited (past day)")
-print("-[5] Bestselling (all time)\n-[6] Bestselling (weekly)\n-[7] Bestselling (past day)\n-[8] Recently Updated")
-sortby = input("Choose a sort option (1-8): ").strip()
-api_url = sort_options.get(sortby)
-if not api_url:
-    print("Invalid sort option selected. Exiting.")
-    exit()
-
-# Collect clothing IDs from search results
-clothing_ids = []
-page_count = 0
-while True:
-    response = session.get(api_url)
-    data = response.json()
-    page_ids = [item["id"] for item in data.get("data", [])]
-    if not page_ids:
-        print("No more results found or an error occurred.")
-        break
-    clothing_ids.extend(page_ids)
-    next_cursor = data.get("nextPageCursor")
-    if not next_cursor:
-        break
-    api_url = f"{api_url}&cursor={next_cursor}"
-    page_count += 1
-
-print(f"Collected {len(clothing_ids)} IDs over {page_count} pages")
+# Define URL template to search for clothing items, allowing us to replace `{}` with each keyword
+base_url_template = "https://catalog.roblox.com/v1/search/items?category=Clothing&keyword={}&limit=120&maxPrice=5&minPrice=5&salesTypeFilter=1&subcategory=ClassicShirts"
 
 # Function to sanitize filenames
 def sanitize_filename(name):
     return ''.join(char for char in name if char.isalnum() or char in " -_.()")
 
-# Download and process each clothing item
-for clothing_id in clothing_ids:
-    try:
-        # Download XML to extract image ID
-        xml_url = f"https://assetdelivery.roblox.com/v1/asset/?id={clothing_id}"
-        xml_response = session.get(xml_url)
-        if xml_response.status_code != 200:
-            print(f"Failed to download XML for ID {clothing_id}")
-            continue
+# Loop through each keyword and download up to 3 items for each
+for keyword in keywords:
+    if keyword:
+        api_url = base_url_template.format(keyword.replace(" ", "+").lower())
+        
+        # Collect clothing IDs from search results for each keyword, limit to 3 items
+        response = session.get(api_url)
+        data = response.json()
+        clothing_ids = [item["id"] for item in data.get("data", [])][:3]  # Limit to 3 items per keyword
 
-        # Extract image ID from XML
-        xml_content = xml_response.text
-        match = re.search(r'<url>.*\?id=(\d+)</url>', xml_content)
-        if not match:
-            print(f"Could not find image ID in XML for {clothing_id}")
-            continue
-        image_id = match.group(1)
+        print(f"Collecting IDs for keyword '{keyword}': {clothing_ids}")
 
-        # Get item name and sanitize it for filename
-        name_response = session.get(f"https://economy.roblox.com/v2/assets/{image_id}/details")
-        name = name_response.json().get("Name", f"Item_{clothing_id}")
-        filename = sanitize_filename(name)
+        # Download and process each clothing item for the keyword
+        for clothing_id in clothing_ids:
+            try:
+                # Download XML to extract image ID
+                xml_url = f"https://assetdelivery.roblox.com/v1/asset/?id={clothing_id}"
+                xml_response = session.get(xml_url)
+                if xml_response.status_code != 200:
+                    print(f"Failed to download XML for ID {clothing_id}")
+                    continue
 
-        # Download the clothing image
-        img_url = f"https://assetdelivery.roblox.com/v1/asset/?id={image_id}"
-        img_response = session.get(img_url)
-        if img_response.status_code != 200 or len(img_response.content) < 7500:
-            print(f"Failed to download or image too small for ID {clothing_id}")
-            continue
+                # Extract image ID from XML
+                xml_content = xml_response.text
+                match = re.search(r'<url>.*\?id=(\d+)</url>', xml_content)
+                if not match:
+                    print(f"Could not find image ID in XML for {clothing_id}")
+                    continue
+                image_id = match.group(1)
 
-        # Save image
-        folder = f"Storage/Clothes/{cltype}"
-        os.makedirs(folder, exist_ok=True)
-        img_path = os.path.join(folder, f"{filename}.png")
-        with open(img_path, 'wb') as img_file:
-            img_file.write(img_response.content)
-        print(f"Downloaded {filename}")
+                # Get item name and sanitize it for filename
+                name_response = session.get(f"https://economy.roblox.com/v2/assets/{image_id}/details")
+                name = name_response.json().get("Name", f"Item_{clothing_id}")
+                filename = sanitize_filename(name)
 
-        # Apply template overlay if enabled
-        if templatechanger:
-            img = Image.open(img_path)
-            template = Image.open(f"Storage/Json/{cltype.lower()}.png")
-            img.paste(template, (0, 0), template)
-            img.save(img_path)
-            print(f"Applied template to {filename}")
+                # Download the clothing image
+                img_url = f"https://assetdelivery.roblox.com/v1/asset/?id={image_id}"
+                img_response = session.get(img_url)
+                if img_response.status_code != 200 or len(img_response.content) < 7500:
+                    print(f"Failed to download or image too small for ID {clothing_id}")
+                    continue
 
-    except Exception as e:
-        print(f"Error processing ID {clothing_id}: {e}")
+                # Save image
+                folder = f"Storage/Clothes/{cltype}"
+                os.makedirs(folder, exist_ok=True)
+                img_path = os.path.join(folder, f"{filename}.png")
+                with open(img_path, 'wb') as img_file:
+                    img_file.write(img_response.content)
+                print(f"Downloaded {filename}")
 
-print(f"Downloaded and processed {len(clothing_ids)} items.")
+                # Apply template overlay if enabled
+                if templatechanger:
+                    img = Image.open(img_path)
+                    template = Image.open(f"Storage/Json/{cltype.lower()}.png")
+                    img.paste(template, (0, 0), template)
+                    img.save(img_path)
+                    print(f"Applied template to {filename}")
+
+            except Exception as e:
+                print(f"Error processing ID {clothing_id}: {e}")
+
+print(f"Downloaded and processed items for keywords: {', '.join(keywords)}")
