@@ -1,9 +1,12 @@
 # NEXT LINE IS RUN IN Clothing Downloader.py
-# This Function will Take the Names (from ClothingD.py) that are given to it in Clothing Downloader.py
+# This Function will Take the Names (from GetKeyWord.py) that are given to it in Clothing Downloader.py
 # Then it will send it over to the ChatGPT Api and it Returns the 3 most used keywords
 
 import requests
 import json
+from datetime import datetime
+
+today_date = datetime.today().strftime("%B %d, %Y")
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -19,12 +22,21 @@ def getFilterWord(content):
     data = {
         "model": "gpt-4o-mini",
         "messages": [
-            {"role": "system", "content": "You will get Names of Roblox Clothes."
-             + "Out of that Create 1-3 Words that are mostly used and only answer that."
-             + "Dont use , or any other things like . and they should fit together so dont wite for example 'Emo, Kawaii, Y2K'"
-             + "Im talking about for example: Halloween or Hello Kitty or Emo Y2k. Also answer in 3 Different words for example Word1: Emo Y2k Word2: Hello Kitty etc."
-             + "And they should fit together so dont combine them like Y2k Hello Kitty or something"},
-            {"role": "user", "content": content}
+            {
+                "role": "system",
+                "content": (
+                    "You will get Names of Roblox Clothes. Out of that, create 1-3 words that are mostly used, and only answer that. "
+                    "Don't use commas or periods, and the words should fit together, like 'Emo Y2k' or 'Hello Kitty'. "
+                    "Do not combine mismatched themes, such as 'Y2k Hello Kitty'. Answer in three different words, like: "
+                    "Word1: Emo Y2k Word2: Hello Kitty, etc. "
+                    "Consider the season or upcoming holidays for relevance. But only if its mentioned."
+                    f"Today is {today_date}."
+                )
+            },
+            {
+                "role": "user",
+                "content": content
+            }
         ]
     }
 
