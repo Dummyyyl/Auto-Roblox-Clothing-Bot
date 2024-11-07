@@ -71,15 +71,21 @@ for keyword in keywords:
     if keyword:
         api_url = base_url_template.format(keyword.replace(" ", "+").lower())
         
-        # Collect clothing IDs from search results for each keyword, limit to 3 items
+        # Fetch a larger batch of clothing items (e.g., 10 items) for each keyword
         response = session.get(api_url)
         data = response.json()
-        clothing_ids = [item["id"] for item in data.get("data", [])][:3]  # Limit to 3 items per keyword
+        clothing_ids = [item["id"] for item in data.get("data", [])]  # Don't limit this batch
 
         print(f"Collecting IDs for keyword '{keyword}': {clothing_ids}")
 
-        # Download and process each clothing item for the keyword
+        # Initialize a counter for successfully downloaded items
+        downloaded_items = 0
+
+        # Download and process clothing items, retrying if one fails until we have 3 successful items
         for clothing_id in clothing_ids:
+            if downloaded_items >= 3:
+                break  # Stop if we've downloaded 3 items
+
             try:
                 # Download XML to extract image ID
                 xml_url = f"https://assetdelivery.roblox.com/v1/asset/?id={clothing_id}"
@@ -100,6 +106,15 @@ for keyword in keywords:
                 name_response = session.get(f"https://economy.roblox.com/v2/assets/{image_id}/details")
                 name = name_response.json().get("Name", f"Item_{clothing_id}")
                 filename = sanitize_filename(name)
+
+                # Split the keyword into individual words and check if any of the words are in the item name
+                keyword_words = set(keyword.lower().split())  # Split and convert to set for uniqueness
+                name_words = set(name.lower().split())  # Split and convert to set for comparison
+
+                # Check if at least one word in the keyword is found in the item name
+                if not keyword_words.intersection(name_words):
+                    print(f"Skipping '{name}' as no keyword words are found.")
+                    continue  # Skip this item if no keyword word is found
 
                 # Download the clothing image
                 img_url = f"https://assetdelivery.roblox.com/v1/asset/?id={image_id}"
@@ -122,9 +137,13 @@ for keyword in keywords:
                     template = Image.open(f"Storage/Json/{cltype.lower()}.png")
                     img.paste(template, (0, 0), template)
                     img.save(img_path)
-                    print(f"Applied template to {filename}")
+
+                # Increment the downloaded items counter
+                downloaded_items += 1
 
             except Exception as e:
                 print(f"Error processing ID {clothing_id}: {e}")
+
+        print(f"Downloaded {downloaded_items} items for keyword '{keyword}'.")
 
 print(f"Downloaded and processed items for keywords: {', '.join(keywords)}")
