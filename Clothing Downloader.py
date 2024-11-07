@@ -2,7 +2,6 @@ import requests
 import os
 import json
 import re
-from PIL import Image
 from colorama import init
 from Ai_Filter import getFilterWord
 from GetKeyWord import fetch_titles
