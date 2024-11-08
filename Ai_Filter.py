@@ -29,7 +29,7 @@ def getFilterWord(content):
                     "Don't use commas or periods, and the words should fit together, like 'Emo Y2k' or 'Hello Kitty'. "
                     "Do not combine mismatched themes, such as 'Y2k Hello Kitty'. Answer in three different words, like: "
                     "Word1: Emo Y2k Word2: Hello Kitty, etc. "
-                    "Consider the season or upcoming holidays for relevance. But only if its mentioned."
+                    "Consider the season or upcoming holidays for relevance. IMPORTANT ONLY DO THAT IF ITS MENTIONED DONT WRITE THINGS THAT WERENT THERE!"
                     f"Today is {today_date}."
                 )
             },
