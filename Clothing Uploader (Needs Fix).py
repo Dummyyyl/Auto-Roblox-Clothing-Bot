@@ -5,10 +5,8 @@ from cleantext import clean
 import requests
 from colorama import init, Fore, Back
 
-# Initialize colorama for colored output in console
 init()
 
-# Load config.json instead of Config.ini
 try:
     with open("config.json", "r") as file:
         config = json.load(file)
