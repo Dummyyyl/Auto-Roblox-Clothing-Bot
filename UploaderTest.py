@@ -48,19 +48,28 @@ url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&gro
 open_uploadlink(url)
 
 # Path to the target image you want to detect on the screen
-image_path1 = r"Storage\Pictures\target1.png"
-image_path2 = r"Storage\Pictures\target_image.png"
-image_path3 = r"Storage\Pictures\target_image.png"
-image_path4 = r"Storage\Pictures\target_image.png"
+image_path1 = r"Storage\OpenCVPic\picture1.png"
+image_path2 = r"Storage\OpenCVPic\picture2.png"
+image_path3 = r"Storage\OpenCVPic\picture3.png"
+image_path4 = r"Storage\OpenCVPic\target_image.png"
 
-
-# Wait a few seconds to allow the page to load
 time.sleep(5)
 
 # Continuously check for the target image on the screen
 while True:
-    position = find_image_on_screen(image_path1)
-    if position:
-        move_mouse_to_target(position)
+    position1 = find_image_on_screen(image_path1)
+    # position2 = find_image_on_screen(image_path2)
+    # position3 = find_image_on_screen()
+    # position4 = find_image_on_screen()
+    if position1:
+        move_mouse_to_target(position1)
+        pyautogui.click()
+        time.sleep(0.5)
+        position2 = find_image_on_screen(image_path2)
+        move_mouse_to_target(position2)
+        pyautogui.click()
+        pyautogui.click()
+
+        # pyautogui.hotkey('ctrl', 'v')
         break  # Exit the loop once the target is found and mouse is moved
     time.sleep(1)  # Check every second
