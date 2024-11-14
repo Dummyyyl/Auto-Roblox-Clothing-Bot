@@ -23,7 +23,7 @@ url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&gro
 
 # Variables for the CV Path
 upload_button_path = "Storage\OpenCVPic\\upload_button_cv.png"
-navigate_path1 = "Storage\OpenCVPic\\navigate_folder1.png"
+navigate_path = "Storage\OpenCVPic\\navigate_folder.png"
 name_field_path = "Storage\OpenCVPic\\name_field.png"
 description_field_path = "Storage\OpenCVPic\\description_field.png"
 upload_to_roblox = "Storage\OpenCVPic\\upload_to_roblox.png"
@@ -83,7 +83,7 @@ while True:
         time.sleep(2)
         
         # Move to the Path in the Explorer
-        position2 = find_image_on_screen(navigate_path1)
+        position2 = find_image_on_screen(navigate_path)
         move_mouse_to_target(position2)
 
         # Copy the Path
