@@ -1,3 +1,5 @@
+#--------------------------- Imports ---------------------------
+
 import webbrowser
 import pyautogui
 import cv2
@@ -6,15 +8,27 @@ import time
 import pyperclip
 from pathlib import Path
 import json
+import os
 
-# Set your desired full path here
-desired_full_path = r"C:\Users\marku\OneDrive\Desktop\Auto-Roblox-Clothing-Bot-main (1)\Auto-Roblox-Clothing-Bot-main\Storage\Clothes\Shirts"
+#--------------------------- Variables ---------------------------
 
-# Load description from the configuration file
 with open('config.json', 'r') as f:
     config = json.load(f)
 
 description = config["clothing"]["description"]
+groupID = config["clothing"]["group"]
+
+full_path = r"C:\Users\MarkusEisenmann\Documents\Code\Auto-Roblox-Clothing-Bot-main\Auto-Roblox-Clothing-Bot-main\Storage\Clothes\Shirts"
+url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&groupId={groupID}"
+
+# Variables for the CV Path
+upload_button_path = "Storage\OpenCVPic\\upload_button_cv.png"
+navigate_path1 = "Storage\OpenCVPic\\navigate_folder1.png"
+name_field_path = "Storage\OpenCVPic\\name_field.png"
+description_field_path = "Storage\OpenCVPic\\description_field.png"
+upload_to_roblox = "Storage\OpenCVPic\\upload_to_roblox.png"
+
+#--------------------------- Functions ---------------------------
 
 # Function to open the link in the default web browser
 def open_uploadlink(link):
@@ -51,21 +65,11 @@ def move_mouse_to_target(target_position):
         print(f"Mouse moved to position: {target_position}")
     else:
         print("Target not found on the screen.")
-
-# URL and group ID
-groupID = 16240463
-url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&groupId={groupID}"
+        
+#--------------------------- Uploader ---------------------------
 
 # Open the site
 open_uploadlink(url)
-
-# Path to the target image you want to detect on the screen
-upload_button_path = "Storage\OpenCVPic\\upload_button_cv.png"
-navigate_path1 = "Storage\OpenCVPic\\navigate_folder1.png"
-navigate_path2 = "Storage\OpenCVPic\\navigate_folder_2.png"
-name_field_path = "Storage\OpenCVPic\\name_field.png"
-description_field_path = "Storage\OpenCVPic\\description_field.png"
-upload_to_roblox = "Storage\OpenCVPic\\upload_to_roblox.png"
 
 time.sleep(5)
 
@@ -81,8 +85,6 @@ while True:
         # Move to the Path in the Explorer
         position2 = find_image_on_screen(navigate_path1)
         move_mouse_to_target(position2)
-        position3 = find_image_on_screen(navigate_path2)
-        move_mouse_to_target(position3)
 
         # Copy the Path
         pyautogui.click()
@@ -94,18 +96,18 @@ while True:
         current_path = pyperclip.paste()
         
         # Compare with the desired full path
-        if current_path == desired_full_path:
+        if current_path == full_path:
             print("Path matches the desired path. Pressing ESC...")
             pyautogui.press('esc')
         else:
             print(f"Current path ({current_path}) does not match. Setting to desired path...")
-            pyperclip.copy(desired_full_path)
+            pyperclip.copy(full_path)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(0.1)
             pyautogui.press('enter')
             time.sleep(0.1)
 
-
+        # Select image to upload
 
         # DELETE THIS WHEN DONE
         time.sleep(0.5)
@@ -120,7 +122,11 @@ while True:
         pyautogui.click()
         pyautogui.click()
         time.sleep(0.1)
+        pyautogui.hotkey('ctrl', 'a')
+        time.sleep(0.1)
         pyautogui.hotkey('ctrl', 'c')
+
+        # Delete Image from Name in clipboard
 
         # Move to the Description Field
         position5 = find_image_on_screen(description_field_path)
