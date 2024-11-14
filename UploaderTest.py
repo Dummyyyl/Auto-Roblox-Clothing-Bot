@@ -3,6 +3,8 @@ import pyautogui
 import cv2
 import numpy as np
 import time
+import pyperclip
+from pathlib import Path
 
 # Function to open the link in the default web browser
 def open_uploadlink(link):
@@ -48,28 +50,52 @@ url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&gro
 open_uploadlink(url)
 
 # Path to the target image you want to detect on the screen
-image_path1 = r"Storage\OpenCVPic\picture1.png"
-image_path2 = r"Storage\OpenCVPic\picture2.png"
+image_path1 = r"Storage\OpenCVPic\upload_button_cv.png"
+image_path2 = r"Storage\OpenCVPic\navigate_folder.png"
 image_path3 = r"Storage\OpenCVPic\picture3.png"
 image_path4 = r"Storage\OpenCVPic\target_image.png"
 
-time.sleep(5)
-
-# Continuously check for the target image on the screen
+# Now, continuously check for the target image on the screen
 while True:
     position1 = find_image_on_screen(image_path1)
-    # position2 = find_image_on_screen(image_path2)
-    # position3 = find_image_on_screen()
-    # position4 = find_image_on_screen()
     if position1:
         move_mouse_to_target(position1)
         pyautogui.click()
-        time.sleep(0.5)
+        time.sleep(2)
+        
+        # Now search for position2 and interact with it
         position2 = find_image_on_screen(image_path2)
         move_mouse_to_target(position2)
         pyautogui.click()
-        pyautogui.click()
+        time.sleep(0.1)
+        pyautogui.hotkey('ctrl', 'c')
+        time.sleep(0.1)
 
-        # pyautogui.hotkey('ctrl', 'v')
-        break  # Exit the loop once the target is found and mouse is moved
+        # Get the path from clipboard (e.g. "C:\Users\MarkusEisenmann\Documents\Code\Auto-Roblox-Clothing-Bot-main\Auto-Roblox-Clothing-Bot-main\Storage")
+        current_path = pyperclip.paste()
+
+        # Define the base and fixed path
+        base_path = r"Auto-Roblox-Clothing-Bot-main\Auto-Roblox-Clothing-Bot-main\Storage"
+        fixed_path = r"Clothes\Shirts"
+
+        # Check if the current path already includes the base_path
+        if base_path in current_path:
+            # If it already contains the base path, append only the fixed_path
+            final_path = Path(current_path) / fixed_path
+        else:
+            # If the base_path is not present, append the entire fixed path
+            final_path = Path(current_path) / base_path / fixed_path
+
+        # Copy the final path back to the clipboard
+        pyperclip.copy(str(final_path))
+
+        time.sleep(0.1)
+
+        # Paste the copied path using 'ctrl + v'
+        pyautogui.hotkey('ctrl', 'v')
+        time.sleep(0.1)
+        pyautogui.press('enter')
+        
+        break  # Exit the loop once the target is found and actions are performed
+    
     time.sleep(1)  # Check every second
