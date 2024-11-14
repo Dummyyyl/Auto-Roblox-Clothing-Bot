@@ -12,12 +12,14 @@ print("Running... please wait 20-30 Seconds")
 result = fetch_titles()
 if result:
     response = getFilterWord(result)
+
+    # Use a regular expression to match the format "WordX: Keyword"
+    matches = re.findall(r'Word\d+: (.+?)(?=$|\sWord\d+:)', response)
     
-    # Split the response by lines to get each keyword
-    lines = response.splitlines()
-    keyword1 = lines[0].split(": ", 1)[1] if len(lines) > 0 else None
-    keyword2 = lines[1].split(": ", 1)[1] if len(lines) > 1 else None
-    keyword3 = lines[2].split(": ", 1)[1] if len(lines) > 2 else None
+    # Assign the keywords to variables (ensure we handle cases where there are fewer than 3 matches)
+    keyword1 = matches[0] if len(matches) > 0 else None
+    keyword2 = matches[1] if len(matches) > 1 else None
+    keyword3 = matches[2] if len(matches) > 2 else None
 else:
     print("No paid titles found or failed to fetch data.")
     exit()
@@ -146,4 +148,4 @@ for keyword in keywords:
 
         print(f"Downloaded {downloaded_items} items for keyword '{keyword}'.")
 
-print(f"Downloaded and processed items for keywords: {', '.join(keywords)}")
+print(f"Downloaded and processed items for keywords: {', '.join(filter(None, keywords))}")
