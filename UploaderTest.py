@@ -29,6 +29,10 @@ name_field_path = "Storage\OpenCVPic\\name_field.png"
 name_field_inputted_path = "Storage\OpenCVPic\\name_field_inputted.png"
 description_field_path = "Storage\OpenCVPic\\description_field.png"
 upload_to_roblox = "Storage\OpenCVPic\\upload_to_roblox.png"
+find_image_path = "Storage\OpenCVPic\\find_image.png"
+find_image_backup_path = "Storage\OpenCVPic\\find_image_backup.png"
+first_image_path = "Storage\OpenCVPic\\first_find_image.png"
+final_upload_path = "Storage\OpenCVPic\\final_upload.png"
 
 #--------------------------- Functions ---------------------------
 
@@ -137,19 +141,23 @@ while True:
             pyautogui.press('enter')
             time.sleep(0.1)
 
+        find_image1 = find_image_on_screen(first_image_path)
+        find_image2 = find_image_on_screen(find_image_path)
+        find_image3 = find_image_on_screen(find_image_backup_path)
+        if find_image1:
+            move_mouse_to_target(find_image1)
+        elif find_image2:
+            move_mouse_to_target(find_image2)
+        else:
+            move_mouse_to_target(find_image3)
+        current_x, current_y = pyautogui.position()
+        pixels_to_move_down = 150  # Change this value as needed
+        pyautogui.moveTo(current_x, current_y + pixels_to_move_down, duration=0.1)
 
-        # Select image to upload
-        # Selects image
-        # gets image path
-        # finds the image on the screen
-        # moves to it
-
-
-
-        # DELETE THIS WHEN DONE ##########################################################################
-        time.sleep(2)
-        # pyautogui.hotkey('alt', 'f4')
-        time.sleep(0.1)
+        time.sleep(0.2)
+        pyautogui.doubleClick()
+        
+        time.sleep(0.)
         
         # Move to the Name Field
         position4 = find_image_on_screen(name_field_path)
@@ -161,8 +169,7 @@ while True:
         time.sleep(0.2)  # Delay to ensure it's ready for input
 
         # Copy the Name
-        pyautogui.click()
-        pyautogui.click()
+        pyautogui.doubleClick()
         time.sleep(0.01)
         pyautogui.hotkey('ctrl', 'a')
         time.sleep(0.01)
@@ -190,7 +197,11 @@ while True:
         # Move to the Upload field and Upload It
         position7= find_image_on_screen(upload_to_roblox)
         move_mouse_to_target(position7)
-        # pyautogui.click()                                                 ################# Remove When done
+        pyautogui.click()
+        
+        position8 = find_image_on_screen(final_upload_path)
+        move_mouse_to_target(position8)
+        
 
         break  # Exit the loop once the target is found and actions are performed
     
