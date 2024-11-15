@@ -9,6 +9,7 @@ import pyperclip
 from pathlib import Path
 import json
 import os
+import random
 
 #--------------------------- Variables ---------------------------
 
@@ -25,6 +26,7 @@ url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&gro
 upload_button_path = "Storage\OpenCVPic\\upload_button_cv.png"
 navigate_path = "Storage\OpenCVPic\\navigate_folder.png"
 name_field_path = "Storage\OpenCVPic\\name_field.png"
+name_field_inputted_path = "Storage\OpenCVPic\\name_field_inputted.png"
 description_field_path = "Storage\OpenCVPic\\description_field.png"
 upload_to_roblox = "Storage\OpenCVPic\\upload_to_roblox.png"
 
@@ -65,6 +67,34 @@ def move_mouse_to_target(target_position):
         print(f"Mouse moved to position: {target_position}")
     else:
         print("Target not found on the screen.")
+        
+        
+        
+# Function to delete an image file based on partial name match
+def delete_clothing_image():
+    # Get the name of the clothing image from the clipboard
+    partial_name = pyperclip.paste().strip()
+    
+    # Get a list of all files in the directory
+    files_in_directory = os.listdir(full_path)
+    
+    # Find a file that contains the clipboard content (case-insensitive match)
+    matching_files = [file for file in files_in_directory if partial_name.lower() in file.lower()]
+    
+    if matching_files:
+        for matching_file in matching_files:
+            file_path = os.path.join(full_path, matching_file)
+            try:
+                # Delete the matching file
+                os.remove(file_path)
+                print(f"Deleted file: {file_path}")
+            except Exception as e:
+                print(f"Error deleting file {file_path}: {e}")
+    else:
+        print(f"No file matching '{partial_name}' found in the directory.")
+        
+
+
         
 #--------------------------- Uploader ---------------------------
 
@@ -107,30 +137,44 @@ while True:
             pyautogui.press('enter')
             time.sleep(0.1)
 
-        # Select image to upload
 
-        # DELETE THIS WHEN DONE
-        time.sleep(0.5)
-        pyautogui.hotkey('alt', 'f4')
+        # Select image to upload
+        # Selects image
+        # gets image path
+        # finds the image on the screen
+        # moves to it
+
+
+
+        # DELETE THIS WHEN DONE ##########################################################################
+        time.sleep(2)
+        # pyautogui.hotkey('alt', 'f4')
+        time.sleep(0.1)
         
         # Move to the Name Field
         position4 = find_image_on_screen(name_field_path)
-        move_mouse_to_target(position4)
-        time.sleep(1)  # Delay to ensure it's ready for input
+        position5 = find_image_on_screen(name_field_inputted_path)
+        if position4:
+            move_mouse_to_target(position4)
+        else:
+            move_mouse_to_target(position5)
+        time.sleep(0.2)  # Delay to ensure it's ready for input
 
         # Copy the Name
         pyautogui.click()
         pyautogui.click()
-        time.sleep(0.1)
+        time.sleep(0.01)
         pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.1)
+        time.sleep(0.01)
         pyautogui.hotkey('ctrl', 'c')
 
         # Delete Image from Name in clipboard
+        name_delete = pyperclip.paste()
+        delete_clothing_image()
 
         # Move to the Description Field
-        position5 = find_image_on_screen(description_field_path)
-        move_mouse_to_target(position5)
+        position6 = find_image_on_screen(description_field_path)
+        move_mouse_to_target(position6)
         time.sleep(0.5)  # Edit delay
             
         # Paste the Description
@@ -141,10 +185,11 @@ while True:
         # Scroll Down
         time.sleep(0.2)
         pyautogui.scroll(-500)
+        time.sleep(0.2)
 
         # Move to the Upload field and Upload It
-        position6 = find_image_on_screen(upload_to_roblox)
-        move_mouse_to_target(position6)
+        position7= find_image_on_screen(upload_to_roblox)
+        move_mouse_to_target(position7)
         # pyautogui.click()                                                 ################# Remove When done
 
         break  # Exit the loop once the target is found and actions are performed
