@@ -97,112 +97,92 @@ def delete_clothing_image():
     else:
         print(f"No file matching '{partial_name}' found in the directory.")
         
-
-
+# Function to wait until an image is found on the screen
+def wait_for_image(image_path, confidence=0.8, timeout=30):
+    start_time = time.time()
+    while True:
+        position = find_image_on_screen(image_path, confidence)
+        if position:
+            return position
+        if time.time() - start_time > timeout:
+            raise TimeoutError(f"Timeout while waiting for image: {image_path}")
+        time.sleep(0.1)  # Avoid excessive CPU usage
         
 #--------------------------- Uploader ---------------------------
 
 # Open the site
 open_uploadlink(url)
 
-time.sleep(5)
+# Continuously check for the target images and perform actions
+try:
+    # Wait for the Upload button and click
+    position1 = wait_for_image(upload_button_path)
+    move_mouse_to_target(position1)
+    pyautogui.click()
 
-# Now, continuously check for the target image on the screen
-while True:
-    position1 = find_image_on_screen(upload_button_path)
-    # Move to Upload Button
-    if position1:
-        move_mouse_to_target(position1)
-        pyautogui.click()
-        time.sleep(2)
-        
-        # Move to the Path in the Explorer
-        position2 = find_image_on_screen(navigate_path)
-        move_mouse_to_target(position2)
-
-        # Copy the Path
-        pyautogui.click()
-        time.sleep(0.1)
-        pyautogui.hotkey('ctrl', 'c')
-        time.sleep(0.1)
-
-        # Get the current path from clipboard
-        current_path = pyperclip.paste()
-        
-        # Compare with the desired full path
-        if current_path == full_path:
-            print("Path matches the desired path. Pressing ESC...")
-            pyautogui.press('esc')
-        else:
-            print(f"Current path ({current_path}) does not match. Setting to desired path...")
-            pyperclip.copy(full_path)
-            pyautogui.hotkey('ctrl', 'v')
-            time.sleep(0.1)
-            pyautogui.press('enter')
-            time.sleep(0.1)
-
-        find_image1 = find_image_on_screen(first_image_path)
-        find_image2 = find_image_on_screen(find_image_path)
-        find_image3 = find_image_on_screen(find_image_backup_path)
-        if find_image1:
-            move_mouse_to_target(find_image1)
-        elif find_image2:
-            move_mouse_to_target(find_image2)
-        else:
-            move_mouse_to_target(find_image3)
-        current_x, current_y = pyautogui.position()
-        pixels_to_move_down = 150  # Change this value as needed
-        pyautogui.moveTo(current_x, current_y + pixels_to_move_down, duration=0.1)
-
-        time.sleep(0.2)
-        pyautogui.doubleClick()
-        
-        time.sleep(0.)
-        
-        # Move to the Name Field
-        position4 = find_image_on_screen(name_field_path)
-        position5 = find_image_on_screen(name_field_inputted_path)
-        if position4:
-            move_mouse_to_target(position4)
-        else:
-            move_mouse_to_target(position5)
-        time.sleep(0.2)  # Delay to ensure it's ready for input
-
-        # Copy the Name
-        pyautogui.doubleClick()
-        time.sleep(0.01)
-        pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.01)
-        pyautogui.hotkey('ctrl', 'c')
-
-        # Delete Image from Name in clipboard
-        name_delete = pyperclip.paste()
-        delete_clothing_image()
-
-        # Move to the Description Field
-        position6 = find_image_on_screen(description_field_path)
-        move_mouse_to_target(position6)
-        time.sleep(0.5)  # Edit delay
-            
-        # Paste the Description
-        pyperclip.copy(str(description))
-        pyautogui.click()
-        pyautogui.hotkey('ctrl', 'v')
-
-        # Scroll Down
-        time.sleep(0.2)
-        pyautogui.scroll(-500)
-        time.sleep(0.2)
-
-        # Move to the Upload field and Upload It
-        position7= find_image_on_screen(upload_to_roblox)
-        move_mouse_to_target(position7)
-        pyautogui.click()
-        
-        position8 = find_image_on_screen(final_upload_path)
-        move_mouse_to_target(position8)
-        
-
-        break  # Exit the loop once the target is found and actions are performed
+    # Wait for the file explorer navigation path
+    position2 = wait_for_image(navigate_path)
+    move_mouse_to_target(position2)
+    pyautogui.click()
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'c')  # Copy the path from file explorer
+    time.sleep(0.1)
     
-    time.sleep(1)  # Check every second
+    # Get the current path from clipboard and compare
+    current_path = pyperclip.paste()
+    if current_path == full_path:
+        print("Path matches the desired path. Pressing ESC...")
+        pyautogui.press('esc')
+    else:
+        print(f"Current path ({current_path}) does not match. Setting to desired path...")
+        pyperclip.copy(full_path)
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+    
+    # Wait for one of the target images in the file explorer and double click
+    position = None
+    for image_path in [first_image_path, find_image_path, find_image_backup_path]:
+        position = find_image_on_screen(image_path)
+        if position:
+            move_mouse_to_target(position)
+            break
+    if not position:
+        raise FileNotFoundError("None of the target images were found in the file explorer.")
+    
+    current_x, current_y = pyautogui.position()
+    pyautogui.moveTo(current_x, current_y + 150, duration=0.1)  # Adjust position down
+    pyautogui.doubleClick()
+    time.sleep(0.2)
+
+    # Wait for the Name field and copy its contents
+    position4 = wait_for_image(name_field_inputted_path)
+    move_mouse_to_target(position4)
+    pyautogui.doubleClick()
+    pyautogui.hotkey('ctrl', 'a')
+    pyautogui.hotkey('ctrl', 'c')
+    
+    # Delete the clothing image based on the clipboard content
+    delete_clothing_image()
+
+    # Wait for the Description field and paste the description
+    position6 = wait_for_image(description_field_path)
+    move_mouse_to_target(position6)
+    pyautogui.click()
+    pyperclip.copy(str(description))
+    pyautogui.hotkey('ctrl', 'v')
+
+    # Scroll down and click the Upload button
+    pyautogui.scroll(-500)
+    time.sleep(0.1)
+    position7 = wait_for_image(upload_to_roblox)
+    move_mouse_to_target(position7)
+    pyautogui.click()
+    time.sleep(0.2)
+
+    # Wait for the final upload button and click
+    position8 = wait_for_image(final_upload_path)
+    move_mouse_to_target(position8)
+    pyautogui.click()
+
+except TimeoutError as e:
+    print(f"Error: {e}")
