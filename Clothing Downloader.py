@@ -36,6 +36,7 @@ templatechanger = config["optional"]["templatechanger"]
 debugmode = config["optional"]["debugmode"]
 ratelimitwaitseconds = config["optional"]["ratelimitwaitseconds"]
 maxrobuxtospend = config["optional"]["maxrobuxtospend"]
+download_amount = config["optional"]["download_amount"]
 price = config["clothing"]["price"]
 group = config["clothing"]["group"]
 description = config["clothing"]["description"]
@@ -83,10 +84,10 @@ for keyword in keywords:
         # Initialize a counter for successfully downloaded items
         downloaded_items = 0
 
-        # Download and process clothing items, retrying if one fails until we have 3 successful items
+        # Download and process clothing items, retrying if one fails until the set amount is reached
         for clothing_id in clothing_ids:
-            if downloaded_items >= 3:
-                break  # Stop if we've downloaded 3 items
+            if downloaded_items >= download_amount:
+                break  # Stop if we've downloaded the set amount
 
             try:
                 # Download XML to extract image ID
