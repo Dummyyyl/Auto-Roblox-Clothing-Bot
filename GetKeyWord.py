@@ -34,7 +34,7 @@ def fetch_titles():
         return None
 
     # Define the API URL for the top 120 bestselling shirts this week
-    shirts_url = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=120&maxPrice=5&minPrice=5&salesTypeFilter=1&sortAggregation=3&sortType=2&subcategory=ClassicShirts"
+    shirts_url = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=120&maxPrice=5&minPrice=5&salesTypeFilter=1&sortAggregation=1&sortType=1&subcategory=ClassicShirts"
 
     # Initialize variables to hold titles
     paid_titles = []
