@@ -64,7 +64,7 @@ cltype = "Shirts"
 
 # Define URL template to search for clothing items, allowing us to replace `{}` with each keyword
 base_url_template = "https://catalog.roblox.com/v1/search/items?category=Clothing&keyword={}&limit=120&maxPrice=5&minPrice=5&salesTypeFilter=1&subcategory=ClassicShirts"
-
+               
 # Function to sanitize filenames
 def sanitize_filename(name):
     return ''.join(char for char in name if char.isalnum() or char in " -_.()")
