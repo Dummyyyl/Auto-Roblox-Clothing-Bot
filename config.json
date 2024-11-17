@@ -7,7 +7,8 @@
         "templatechanger": true,
         "debugmode": false,
         "ratelimitwaitseconds": 60,
-        "maxrobuxtospend": 100000
+        "maxrobuxtospend": 100000,
+        "download_amount": 5
     },
     "clothing": {
         "price": 7,
