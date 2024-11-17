@@ -19,6 +19,7 @@ with open('config.json', 'r') as f:
 description = config["clothing"]["description"]
 groupID = config["clothing"]["group"]
 
+file_to_delete = None
 full_path = r"C:\Users\MarkusEisenmann\Documents\Code\Auto-Roblox-Clothing-Bot-main\Auto-Roblox-Clothing-Bot-main\Storage\Clothes\Shirts"
 url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&groupId={groupID}"
 
@@ -33,6 +34,8 @@ find_image_path = "Storage\OpenCVPic\\find_image.png"
 find_image_backup_path = "Storage\OpenCVPic\\find_image_backup.png"
 first_image_path = "Storage\OpenCVPic\\first_find_image.png"
 final_upload_path = "Storage\OpenCVPic\\final_upload.png"
+file_name = "Storage\OpenCVPic\\file_name_field.png"
+choose_picture = "Storage\OpenCVPic\\choose_picture.png"
 
 #--------------------------- Functions ---------------------------
 
@@ -76,13 +79,8 @@ def move_mouse_to_target(target_position):
         
 # Function to delete an image file based on partial name match
 def delete_clothing_image():
-    # Get the name of the clothing image from the clipboard
     partial_name = pyperclip.paste().strip()
-    
-    # Get a list of all files in the directory
     files_in_directory = os.listdir(full_path)
-    
-    # Find a file that contains the clipboard content (case-insensitive match)
     matching_files = [file for file in files_in_directory if partial_name.lower() in file.lower()]
     
     if matching_files:
@@ -108,6 +106,7 @@ def wait_for_image(image_path, confidence=0.8, timeout=30):
             raise TimeoutError(f"Timeout while waiting for image: {image_path}")
         time.sleep(0.1)  # Avoid excessive CPU usage
         
+
 #--------------------------- Uploader ---------------------------
 
 # Open the site
@@ -151,19 +150,24 @@ try:
     
     current_x, current_y = pyautogui.position()
     pyautogui.moveTo(current_x, current_y + 150, duration=0.1)  # Adjust position down
-    pyautogui.doubleClick()
-    time.sleep(0.2)
+    pyautogui.click()
 
     # Wait for the Name field and copy its contents
-    position4 = wait_for_image(name_field_inputted_path)
+    position4 = wait_for_image(file_name)
     move_mouse_to_target(position4)
-    pyautogui.doubleClick()
+    pyautogui.click()
     pyautogui.hotkey('ctrl', 'a')
     pyautogui.hotkey('ctrl', 'c')
-    
-    # Delete the clothing image based on the clipboard content
-    delete_clothing_image()
 
+    # Store the filename in a variable
+    file_to_delete = pyperclip.paste().strip()
+    print(f"File to delete: {file_to_delete}")
+    
+    # Choose Picture
+    position5 = wait_for_image(choose_picture)
+    move_mouse_to_target(position5)
+    pyautogui.click()
+    
     # Wait for the Description field and paste the description
     position6 = wait_for_image(description_field_path)
     move_mouse_to_target(position6)
@@ -172,7 +176,6 @@ try:
     pyautogui.hotkey('ctrl', 'v')
 
     # Scroll down and click the Upload button
-    pyautogui.scroll(-500)
     time.sleep(0.1)
     position7 = wait_for_image(upload_to_roblox)
     move_mouse_to_target(position7)
@@ -184,5 +187,12 @@ try:
     move_mouse_to_target(position8)
     pyautogui.click()
 
+    # Delete the clothing image based on the stored variable
+    delete_clothing_image()
+
 except TimeoutError as e:
     print(f"Error: {e}")
+finally:
+    # Clear the variable after everything is done
+    file_to_delete = None
+    print("Cleared the file_to_delete variable.")
