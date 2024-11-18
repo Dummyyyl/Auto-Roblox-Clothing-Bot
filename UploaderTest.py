@@ -84,16 +84,16 @@ def delete_clothing_image():
     matching_files = [file for file in files_in_directory if partial_name.lower() in file.lower()]
     
     if matching_files:
-        for matching_file in matching_files:
-            file_path = os.path.join(full_path, matching_file)
-            try:
-                # Delete the matching file
-                os.remove(file_path)
-                print(f"Deleted file: {file_path}")
-            except Exception as e:
-                print(f"Error deleting file {file_path}: {e}")
+        # Delete only the first matching file
+        file_path = os.path.join(full_path, matching_files[0])
+        try:
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
+        except Exception as e:
+            print(f"Error deleting file {file_path}: {e}")
     else:
         print(f"No file matching '{partial_name}' found in the directory.")
+
         
 # Function to wait until an image is found on the screen
 def wait_for_image(image_path, confidence=0.8, timeout=30):
@@ -175,6 +175,11 @@ try:
     pyperclip.copy(str(description))
     pyautogui.hotkey('ctrl', 'v')
 
+    # Delete the clothing image based on the stored variable
+    print(file_to_delete)
+    pyperclip.copy(file_to_delete)
+    delete_clothing_image()
+    
     # Scroll down and click the Upload button
     time.sleep(0.1)
     position7 = wait_for_image(upload_to_roblox)
@@ -186,9 +191,6 @@ try:
     position8 = wait_for_image(final_upload_path)
     move_mouse_to_target(position8)
     pyautogui.click()
-
-    # Delete the clothing image based on the stored variable
-    delete_clothing_image()
 
 except TimeoutError as e:
     print(f"Error: {e}")
