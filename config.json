@@ -2,9 +2,9 @@
     "auth": {
         "cookie": "Roblox-Cookie",
         "api_key": "ChatGPT-Api-Key",
-                "error_webhook": "error_webhook",
+        "error_webhook": "error_webhook",
         "upload_webhook": "upload_webhook",
-        "sell_webhook": "sell_webhook",
+        "sale_webhook": "sell_webhook",
         "running_webhook": "running_webhook"
     },
     "optional": {
