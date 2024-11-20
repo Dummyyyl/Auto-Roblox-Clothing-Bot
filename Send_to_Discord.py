@@ -43,6 +43,21 @@ def upload_log(error):
     }
     requests.post(upload_webhook, json=data)
 
+def status_log():
+    data = {
+        "content": None,
+        "embeds": [
+            {
+                "description": "🔄 **The Group Sale Notifier is now tracking group sales. Enjoy!**",
+                "color": 0x0000FF,
+                "author": {"name": "🚀 Program Loaded", "icon_url": "https://avatars.githubusercontent.com/u/99405955?v=4"},
+                "footer": {"text": "Status: ONLINE", "icon_url": "https://icones.pro/wp-content/uploads/2022/06/icone-du-bouton-en-ligne-vert.png"},
+                "thumbnail": {"url": "https://cdn-icons-png.flaticon.com/512/5537/5537993.png"}
+            }
+        ]
+    }
+    requests.post(status_webhook, json=data)
+
 
 class Stuff:
     wait = 5

@@ -1,4 +1,4 @@
-# This Code gets the top 20 best sold shirts in the last week
+# This Code gets the top 120 best sold shirts in the last week
 # Then it saves the names of them in the function fech_titles
 # Then it will give it over to Clothing Downloader.py
 
