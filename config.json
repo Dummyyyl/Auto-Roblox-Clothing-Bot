@@ -5,7 +5,7 @@
         "error_webhook": "error_webhook",
         "upload_webhook": "upload_webhook",
         "sale_webhook": "sell_webhook",
-        "running_webhook": "running_webhook"
+        "status_webhook": "status_webhook"
     },
     "optional": {
         "templatechanger": true,
