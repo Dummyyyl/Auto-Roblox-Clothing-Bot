@@ -15,6 +15,10 @@ upload_webhook = config["auth"]["upload_webhook"]
 sale_webhook = config["auth"]["sale_webhook"]
 status_webhook = config["auth"]["status_webhook"]
 
+wait = 5
+timeout = 10
+pastids = []
+
 
 def error_log(error_description):
     data = {
@@ -59,11 +63,6 @@ def status_log():
     requests.post(status_webhook, json=data)
 
 
-class Stuff:
-    wait = 5
-    timeout = 10
-    pastids = []
-
 
 
 
@@ -85,9 +84,9 @@ def group_sale_notifier():
     # Load past transaction hashes
     response = get(f'https://economy.roblox.com/v2/groups/{groupID}/transactions?cursor=&limit=10&transactionType=Sale', cookies={'.ROBLOSECURITY': cookie})
     for purchase in response.json().get('data', []):
-        Stuff.pastids.append(purchase['idHash'])
+        pastids.append(purchase['idHash'])
 
-    log(f"Loaded with {len(Stuff.pastids)} past hashes.")
+    log(f"Loaded with {len(pastids)} past hashes.")
 
     try:
         post(sale_webhook, json={
@@ -112,9 +111,9 @@ def group_sale_notifier():
             if nowpending > pastpending:
                 response = get(f'https://economy.roblox.com/v2/groups/{groupID}/transactions?cursor=&limit=10&transactionType=Sale', cookies={'.ROBLOSECURITY': cookie})
                 for purchase in response.json().get('data', []):
-                    if purchase['idHash'] not in Stuff.pastids:
+                    if purchase['idHash'] not in pastids:
                         pastpending = nowpending
-                        Stuff.pastids.append(purchase['idHash'])
+                        pastids.append(purchase['idHash'])
                         pfp = profilePicture(purchase['agent']['id'])
                         post(sale_webhook, json={
                             "content": None,
@@ -127,7 +126,7 @@ def group_sale_notifier():
                             }]
                         })
 
-            sleep(Stuff.wait)
+            sleep(wait)
         except Exception as e:
             log(f'[ERROR] {e}')
-            sleep(Stuff.timeout)
+            sleep(timeout)

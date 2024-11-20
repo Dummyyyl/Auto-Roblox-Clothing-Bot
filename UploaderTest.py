@@ -16,13 +16,14 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 
 description = config["clothing"]["description"]
+price = config["clothing"]["price"]
 groupID = config["clothing"]["group"]
 
 file_to_delete = None
-full_path = r"C:\Users\MarkusEisenmann\Documents\Code\Auto-Roblox-Clothing-Bot-main\Auto-Roblox-Clothing-Bot-main\Storage\Clothes\Shirts"
+full_path = r"C:\Users\MarkusEisenmann\Documents\Code\Clothing Bot\Auto-Roblox-Clothing-Bot\Storage\Clothes\Shirts"
 url = f"https://create.roblox.com/dashboard/creations/upload?assetType=Shirt&groupId={groupID}"
+update_url = f"https://create.roblox.com/dashboard/creations?activeTab=TShirt&groupId={groupID}&filterIndex=1"
 
-# Variables for the CV Path
 upload_button_path = "Storage\OpenCVPic\\upload_button_cv.png"
 navigate_path = "Storage\OpenCVPic\\navigate_folder.png"
 name_field_path = "Storage\OpenCVPic\\name_field.png"
@@ -35,6 +36,11 @@ first_image_path = "Storage\OpenCVPic\\first_find_image.png"
 final_upload_path = "Storage\OpenCVPic\\final_upload.png"
 file_name = "Storage\OpenCVPic\\file_name_field.png"
 choose_picture = "Storage\OpenCVPic\\choose_picture.png"
+offsale_location = "Storage\OpenCVPic\\offsale_text.png"
+on_sale_location = "Storage\OpenCVPic\\on_sale.png"
+set_price_location = "Storage\OpenCVPic\\set_price.png"
+publish_location = "Storage\OpenCVPic\\publish_clothing.png"
+wait_till_image = "Storage\OpenCVPic\\wait_till_image.png"
 
 #--------------------------- Functions ---------------------------
 
@@ -74,8 +80,7 @@ def move_mouse_to_target(target_position):
     else:
         print("Target not found on the screen.")
         
-        
-        
+  
 # Function to delete an image file based on partial name match
 def delete_clothing_image():
     partial_name = pyperclip.paste().strip()
@@ -113,82 +118,108 @@ open_uploadlink(url)
 
 # Continuously check for the target images and perform actions
 try:
-    # # Wait for the Upload button and click
-    # position1 = wait_for_image(upload_button_path)
-    # move_mouse_to_target(position1)
-    # pyautogui.click()
+    # Wait for the Upload button and click
+    position1 = wait_for_image(upload_button_path)
+    move_mouse_to_target(position1)
+    pyautogui.click()
 
-    # # Wait for the file explorer navigation path
-    # position2 = wait_for_image(navigate_path)
-    # move_mouse_to_target(position2)
-    # pyautogui.click()
-    # time.sleep(0.1)
-    # pyautogui.hotkey('ctrl', 'c')  # Copy the path from file explorer
-    # time.sleep(0.1)
+    # Wait for the file explorer navigation path
+    position2 = wait_for_image(navigate_path)
+    move_mouse_to_target(position2)
+    pyautogui.click()
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'c')  # Copy the path from file explorer
+    time.sleep(0.1)
     
-    # # Get the current path from clipboard and compare
-    # current_path = pyperclip.paste()
-    # if current_path == full_path:
-    #     print("Path matches the desired path. Pressing ESC...")
-    #     pyautogui.press('esc')
-    # else:
-    #     print(f"Current path ({current_path}) does not match. Setting to desired path...")
-    #     pyperclip.copy(full_path)
-    #     pyautogui.hotkey('ctrl', 'v')
-    #     pyautogui.press('enter')
+    # Get the current path from clipboard and compare
+    current_path = pyperclip.paste()
+    if current_path == full_path:
+        print("Path matches the desired path. Pressing ESC...")
+        pyautogui.press('esc')
+    else:
+        print(f"Current path ({current_path}) does not match. Setting to desired path...")
+        pyperclip.copy(full_path)
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+        
+    for image_path in [first_image_path, find_image_path, find_image_backup_path]:
+        position = find_image_on_screen(image_path)
+        if position:
+            move_mouse_to_target(position)
+            break
+    if not position:
+        raise FileNotFoundError("None of the target images were found in the file explorer.")
     
-    # # Wait for one of the target images in the file explorer and double click
-    # position = None
-    # for image_path in [first_image_path, find_image_path, find_image_backup_path]:
-    #     position = find_image_on_screen(image_path)
-    #     if position:
-    #         move_mouse_to_target(position)
-    #         break
-    # if not position:
-    #     raise FileNotFoundError("None of the target images were found in the file explorer.")
-    
-    # current_x, current_y = pyautogui.position()
-    # pyautogui.moveTo(current_x, current_y + 150, duration=0.1)  # Adjust position down
-    # pyautogui.click()
+    current_x, current_y = pyautogui.position()
+    pyautogui.moveTo(current_x, current_y + 150, duration=0.1)  # Adjust position down
+    pyautogui.click()
 
-    # # Wait for the Name field and copy its contents
-    # position4 = wait_for_image(file_name)
-    # move_mouse_to_target(position4)
-    # pyautogui.click()
-    # pyautogui.hotkey('ctrl', 'a')
-    # pyautogui.hotkey('ctrl', 'c')
+    # Wait for the Name field and copy its contents
+    position4 = wait_for_image(file_name)
+    move_mouse_to_target(position4)
+    pyautogui.click()
+    pyautogui.hotkey('ctrl', 'a')
+    pyautogui.hotkey('ctrl', 'c')
 
-    # # Store the filename in a variable
-    # file_to_delete = pyperclip.paste().strip()
-    # print(f"File to delete: {file_to_delete}")
+    # Store the filename in a variable
+    file_to_delete = pyperclip.paste().strip()
+    print(f"File to delete: {file_to_delete}")
     
-    # # Choose Picture
-    # position5 = wait_for_image(choose_picture)
-    # move_mouse_to_target(position5)
-    # pyautogui.click()
+    # Choose Picture
+    position5 = wait_for_image(choose_picture)
+    move_mouse_to_target(position5)
+    pyautogui.click()
     
-    # # Wait for the Description field and paste the description
-    # position6 = wait_for_image(description_field_path)
-    # move_mouse_to_target(position6)
-    # pyautogui.click()
-    # pyperclip.copy(str(description))
-    # pyautogui.hotkey('ctrl', 'v')
+    # Wait for the Description field and paste the description
+    position6 = wait_for_image(description_field_path)
+    move_mouse_to_target(position6)
+    pyautogui.click()
+    pyperclip.copy(str(description))
+    pyautogui.hotkey('ctrl', 'v')
     
-    # # Scroll down and click the Upload button
-    # time.sleep(0.1)
-    # position7 = wait_for_image(upload_to_roblox)
-    # move_mouse_to_target(position7)
-    # pyautogui.click()
-    # time.sleep(0.2)
+    # Scroll down and click the Upload button
+    time.sleep(0.1)
+    position7 = wait_for_image(upload_to_roblox)
+    move_mouse_to_target(position7)
+    pyautogui.click()
+    time.sleep(0.2)
 
-    # # Wait for the final upload button and click
-    # position8 = wait_for_image(final_upload_path)
-    # move_mouse_to_target(position8)
-    # pyautogui.click()
+    # Wait for the final upload button and click
+    position8 = wait_for_image(final_upload_path)
+    move_mouse_to_target(position8)
+    pyautogui.click()
     
-    time.sleep(5)
-    open_uploadlink("https://create.roblox.com/dashboard/creations?activeTab=TShirt&groupId=16240463&filterIndex=1")
+    wait_for_image(wait_till_image)
+    pyautogui.hotkey('ctrl', 'w')
     
+    open_uploadlink(update_url) 
+    position_offset = wait_for_image(offsale_location)
+    move_mouse_to_target(position_offset)
+    pyautogui.click()
+    
+    position_on_sale = wait_for_image(on_sale_location)
+    move_mouse_to_target(position_on_sale)
+    pyautogui.click()
+    
+    price_location = wait_for_image(set_price_location)
+    move_mouse_to_target(price_location)
+    pyautogui.click()
+    pyperclip.copy(price)
+    pyautogui.hotkey('ctrl', 'v')
+    
+    current_x, current_y = pyautogui.position()
+    pyautogui.moveTo(current_x, current_y + 50, duration=0.1)
+    pyautogui.click()
+    
+    pyautogui.scroll(-300)
+    time.sleep(0.1)
+    
+    publish_button = wait_for_image(publish_location)
+    move_mouse_to_target(publish_button)
+    pyautogui.click()
+    
+    wait_for_image(wait_till_image)
+    pyautogui.hotkey('ctrl', 'w')
     
 
 except TimeoutError as e:

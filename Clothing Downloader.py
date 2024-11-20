@@ -6,6 +6,7 @@ from PIL import Image
 from colorama import init
 from Ai_Filter import getFilterWord
 from GetKeyWord import fetch_titles
+import random
 
 print("Running... please wait 20-30 Seconds")
 # Call the function and retrieve keywords
@@ -69,25 +70,40 @@ base_url_template = "https://catalog.roblox.com/v1/search/items?category=Clothin
 def sanitize_filename(name):
     return ''.join(char for char in name if char.isalnum() or char in " -_.()")
 
-# Loop through each keyword and download up to 3 items for each
+used_clothing_ids = set()
+
+# Loop through each keyword and download up to `download_amount` items for each
 for keyword in keywords:
     if keyword:
         api_url = base_url_template.format(keyword.replace(" ", "+").lower())
         
-        # Fetch a larger batch of clothing items (e.g., 10 items) for each keyword
+        # Fetch a batch of clothing items
         response = session.get(api_url)
         data = response.json()
-        clothing_ids = [item["id"] for item in data.get("data", [])]  # Don't limit this batch
+        clothing_ids = [item["id"] for item in data.get("data", [])]
 
-        print(f"Collecting IDs for keyword '{keyword}': {clothing_ids}")
+        print(f"Collected IDs for keyword '{keyword}': {clothing_ids}")
+
+        if not clothing_ids:
+            print(f"No clothing IDs found for keyword '{keyword}'.")
+            continue  # Skip to the next keyword if no IDs are found
 
         # Initialize a counter for successfully downloaded items
         downloaded_items = 0
 
-        # Download and process clothing items, retrying if one fails until the set amount is reached
-        for clothing_id in clothing_ids:
-            if downloaded_items >= download_amount:
-                break  # Stop if we've downloaded the set amount
+        # Randomly pick clothing IDs until we reach `download_amount`
+        while downloaded_items < download_amount:
+            if len(used_clothing_ids) == len(clothing_ids):
+                print(f"All IDs for keyword '{keyword}' have been used.")
+                break  # Stop if all clothing IDs have already been used
+
+            # Randomly select an ID that hasn't been used yet
+            clothing_id = random.choice(clothing_ids)
+            while clothing_id in used_clothing_ids:
+                clothing_id = random.choice(clothing_ids)  # Retry until a new ID is found
+
+            # Mark the ID as used
+            used_clothing_ids.add(clothing_id)
 
             try:
                 # Download XML to extract image ID
@@ -148,5 +164,9 @@ for keyword in keywords:
                 print(f"Error processing ID {clothing_id}: {e}")
 
         print(f"Downloaded {downloaded_items} items for keyword '{keyword}'.")
+
+# Clear the used IDs set after the run
+used_clothing_ids.clear()
+print(f"Temporary used ID list cleared. Ready for the next run.")
 
 print(f"Downloaded and processed items for keywords: {', '.join(filter(None, keywords))}")
