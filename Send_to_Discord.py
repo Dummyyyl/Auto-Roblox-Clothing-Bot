@@ -34,13 +34,13 @@ def error_log(error_description):
     requests.post(error_webhook, json=data)
 
 
-def upload_log(error):
+def upload_log(clothing):
     data = {
         "username": "Upload Log",  # Replace with your desired webhook name
         "embeds": [
             {
                 "title": "Clothing Uploaded:",  # Title of the embed
-                "description": error,  # Description
+                "description": f'Uploaded Shirt: {clothing}',  # Description
                 "color": 0x00FF00,  # Red color (Hex: #FF0000)
             }
         ]
@@ -54,17 +54,13 @@ def status_log():
             {
                 "description": "🔄 **The Group Sale Notifier is now tracking group sales. Enjoy!**",
                 "color": 0x0000FF,
-                "author": {"name": "🚀 Program Loaded", "icon_url": "https://avatars.githubusercontent.com/u/99405955?v=4"},
+                "author": {"name": "🚀 Program Loaded"},
                 "footer": {"text": "Status: ONLINE", "icon_url": "https://icones.pro/wp-content/uploads/2022/06/icone-du-bouton-en-ligne-vert.png"},
                 "thumbnail": {"url": "https://cdn-icons-png.flaticon.com/512/5537/5537993.png"}
             }
         ]
     }
     requests.post(status_webhook, json=data)
-
-
-
-
 
 def log(text):
     print(f"[{datetime.utcfromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S')}] → {text}")
@@ -87,21 +83,6 @@ def group_sale_notifier():
         pastids.append(purchase['idHash'])
 
     log(f"Loaded with {len(pastids)} past hashes.")
-
-    try:
-        post(sale_webhook, json={
-            "content": None,
-            "embeds": [{
-                "description": "🔄 **The Group Sale Notifier is now tracking group sales. Enjoy!**",
-                "color": 0x0000FF,
-                "author": {"name": "🚀 Program Loaded", "icon_url": "https://avatars.githubusercontent.com/u/99405955?v=4"},
-                "footer": {"text": "Status: ONLINE", "icon_url": "https://icones.pro/wp-content/uploads/2022/06/icone-du-bouton-en-ligne-vert.png"},
-                "thumbnail": {"url": "https://cdn-icons-png.flaticon.com/512/5537/5537993.png"}
-            }]
-        })
-    except Exception as e:
-        log(f'Failed to send notification: {e}')
-
     while True:
         try:
             # Fetch the current pending Robux

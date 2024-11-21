@@ -5,6 +5,7 @@
 
 import requests
 import json
+from Send_to_Discord import error_log
 
 def fetch_titles():
     # Load configuration from JSON file
@@ -27,10 +28,10 @@ def fetch_titles():
     try:
         user_info = session.get("https://users.roblox.com/v1/users/authenticated").json()
         if user_info.get("id") is None:
-            print("Authentication failed. Please check your cookie.")
+            error_log("Authentication failed. Please check your cookie.")
             return None
     except Exception as e:
-        print(f"Error checking authentication: {e}")
+        error_log(f"Error checking authentication: {e}")
         return None
 
     # Define the API URL for the top 120 bestselling shirts this week
