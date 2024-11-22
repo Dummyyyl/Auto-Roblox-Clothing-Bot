@@ -12,7 +12,8 @@
         "debugmode": false,
         "ratelimitwaitseconds": 60,
         "maxrobuxtospend": 100000,
-        "download_amount": 5
+        "download_amount": 5,
+        "shirt_folder": "path"
     },
     "clothing": {
         "price": 7,
