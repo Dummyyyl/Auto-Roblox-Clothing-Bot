@@ -47,12 +47,12 @@ def upload_log(clothing):
     }
     requests.post(upload_webhook, json=data)
 
-def status_log():
+def status_log(status):
     data = {
         "content": None,
         "embeds": [
             {
-                "description": "🔄 **The Group Sale Notifier is now tracking group sales. Enjoy!**",
+                "description": status,
                 "color": 0x0000FF,
                 "author": {"name": "🚀 Program Loaded"},
                 "footer": {"text": "Status: ONLINE", "icon_url": "https://icones.pro/wp-content/uploads/2022/06/icone-du-bouton-en-ligne-vert.png"},
@@ -73,11 +73,8 @@ def profilePicture(id):
         return 'https://tr.rbxcdn.com/af0be829bc4349c0b116ae36843a0a91/150/150/AvatarHeadshot/Png'
 
 def group_sale_notifier():
-    # Fetch initial pending Robux
     r = get(f'https://economy.roblox.com/v1/groups/{groupID}/revenue/summary/day', cookies={'.ROBLOSECURITY': cookie})
     pastpending = r.json().get('pendingRobux', 0)
-
-    # Load past transaction hashes
     response = get(f'https://economy.roblox.com/v2/groups/{groupID}/transactions?cursor=&limit=10&transactionType=Sale', cookies={'.ROBLOSECURITY': cookie})
     for purchase in response.json().get('data', []):
         pastids.append(purchase['idHash'])
@@ -85,7 +82,6 @@ def group_sale_notifier():
     log(f"Loaded with {len(pastids)} past hashes.")
     while True:
         try:
-            # Fetch the current pending Robux
             r = get(f'https://economy.roblox.com/v1/groups/{groupID}/revenue/summary/day', cookies={'.ROBLOSECURITY': cookie})
             nowpending = r.json().get('pendingRobux', pastpending)
 

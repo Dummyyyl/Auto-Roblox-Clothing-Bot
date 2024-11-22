@@ -1,4 +1,4 @@
-from Send_to_Discord import group_sale_notifier, upload_log, error_log, status_log
+from Send_to_Discord import group_sale_notifier, upload_log, status_log
 from Clothing_Downloader import download_clothing
 from UploaderTest import upload_clothing
 from datetime import datetime
@@ -11,20 +11,16 @@ with open('config.json', 'r') as f:
 
 full_path = config["optional"]["shirt_folder"]
 image_extensions = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"}
-
-status_log()
-
 last_run = None
-
-# Flag to track if upload is in progress
 upload_in_progress = False
+
+status_log("🔄 **The Programm is now running.**")
+group_sale_notifier()
 
 while True:
     current_time = datetime.now().strftime("%H:%M")
-    
-    # Check if it's time to download clothing and run the function
-    if current_time == "10:48" and (last_run is None or last_run.date() != datetime.now().date()):
-        status_log()
+    if current_time == "10:28" and (last_run is None or last_run.date() != datetime.now().date()):
+        status_log("🔄 **The Programm is still running.**")
         download_clothing()
         last_run = datetime.now()
     
