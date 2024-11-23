@@ -19,7 +19,7 @@ group_sale_notifier()
 
 while True:
     current_time = datetime.now().strftime("%H:%M")
-    if current_time == "10:28" and (last_run is None or last_run.date() != datetime.now().date()):
+    if current_time == "00:07" and (last_run is None or last_run.date() != datetime.now().date()):
         status_log("🔄 **The Programm is still running.**")
         download_clothing()
         last_run = datetime.now()
@@ -28,5 +28,7 @@ while True:
         upload_in_progress = True
         upload_clothing()
         upload_in_progress = False
+    else:
+        print("tested")
     
     time.sleep(5)
