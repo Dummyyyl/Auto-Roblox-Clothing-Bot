@@ -1,7 +1,7 @@
 from Src.Send_to_Discord import group_sale_notifier, upload_log, status_log
 from Src.Clothing_Downloader import download_clothing
-from Src.UploaderTest import upload_clothing
-from Src.check_account import check_cookie
+from Src.Uploader_Test import upload_clothing
+from Src.Check_Account import check_cookie
 from datetime import datetime
 import time
 import json
@@ -42,7 +42,7 @@ while True:
         last_check_cookie_time = current_time_seconds  # Update the last check time
 
     # Run download_clothing at the specified time
-    if current_time == "15:52" and (last_run is None or last_run.date() != datetime.now().date()):
+    if current_time == "16:30" and (last_run is None or last_run.date() != datetime.now().date()):
         status_log("🔄 **The Program is still running.**")
         download_clothing()
         last_run = datetime.now()
@@ -52,9 +52,5 @@ while True:
         upload_in_progress = True
         upload_clothing()
         upload_in_progress = False
-
-    # Print a message for testing (when no conditions are met)
-    else:
-        print("tested")
     
     time.sleep(5)
