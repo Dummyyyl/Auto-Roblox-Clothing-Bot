@@ -14,6 +14,7 @@ import os
 #--------------------------- Function ---------------------------
 
 def upload_clothing():
+
     #--------------------------- Variables ---------------------------
 
     with open('config.json', 'r') as f:

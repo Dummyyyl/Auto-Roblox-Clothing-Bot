@@ -46,13 +46,7 @@ def download_clothing():
 
     cookie = config["auth"]["cookie"]
     templatechanger = config["optional"]["templatechanger"]
-    debugmode = config["optional"]["debugmode"]
-    ratelimitwaitseconds = config["optional"]["ratelimitwaitseconds"]
-    maxrobuxtospend = config["optional"]["maxrobuxtospend"]
     download_amount = config["optional"]["download_amount"]
-    price = config["clothing"]["price"]
-    group = config["clothing"]["group"]
-    description = config["clothing"]["description"]
 
     # Set up session with cookie and CSRF token
     session = requests.Session()
