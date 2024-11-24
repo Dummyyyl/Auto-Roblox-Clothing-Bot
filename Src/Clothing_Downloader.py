@@ -4,9 +4,9 @@ import json
 import re
 from PIL import Image
 from colorama import init
-from Ai_Filter import getFilterWord
-from GetKeyWord import fetch_titles
-from Send_to_Discord import error_log
+from Src.Ai_Filter import getFilterWord
+from Src.GetKeyWord import fetch_titles
+from Src.Send_to_Discord import error_log
 import random
 
 def download_clothing():

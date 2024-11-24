@@ -5,7 +5,7 @@
 
 import requests
 import json
-from Send_to_Discord import error_log
+from Src.Send_to_Discord import error_log
 
 def fetch_titles():
     # Load configuration from JSON file

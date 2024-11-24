@@ -1,11 +1,11 @@
-from Send_to_Discord import group_sale_notifier, upload_log, status_log
-from Clothing_Downloader import download_clothing
-from UploaderTest import upload_clothing
+from Src.Send_to_Discord import group_sale_notifier, upload_log, status_log
+from Src.Clothing_Downloader import download_clothing
+from Src.UploaderTest import upload_clothing
 from datetime import datetime
-import threading
 import time
 import json
 import os
+import threading
 
 # Load configuration
 with open('config.json', 'r') as f:
@@ -30,11 +30,10 @@ notifier_thread.start()
 # Main loop
 while True:
     current_time = datetime.now().strftime("%H:%M")
-    if current_time == "00:07" and (last_run is None or last_run.date() != datetime.now().date()):
+    if current_time == "15:52" and (last_run is None or last_run.date() != datetime.now().date()):
         status_log("🔄 **The Program is still running.**")
         download_clothing()
         last_run = datetime.now()
-    
     elif os.path.isdir(full_path) and any(file.lower().endswith(ext) for ext in image_extensions for file in os.listdir(full_path)) and not upload_in_progress:
         upload_in_progress = True
         upload_clothing()

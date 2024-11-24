@@ -1,6 +1,6 @@
 #--------------------------- Imports ---------------------------
 
-from Send_to_Discord import upload_log, error_log
+from Src.Send_to_Discord import upload_log, error_log
 import webbrowser
 import pyautogui
 import cv2
@@ -43,6 +43,7 @@ def upload_clothing():
     set_price_location = "Storage\OpenCVPic\\set_price.png"
     publish_location = "Storage\OpenCVPic\\publish_clothing.png"
     wait_till_image = "Storage\OpenCVPic\\wait_till_image.png"
+    no_robux_location = "Storage\OpenCVPic\\no_robux.png"
 
     #--------------------------- Functions ---------------------------
 
@@ -176,6 +177,12 @@ def upload_clothing():
         pyperclip.copy(str(description))
         pyautogui.hotkey('ctrl', 'v')
         
+        position6 = find_image_on_screen(no_robux_location)
+        if position6:
+            error_log("Not enough Robux.")
+            pyautogui.hotkey('ctrl', 'w')
+            return
+
         # Scroll down and click the Upload button
         time.sleep(0.1)
         position7 = wait_for_image(upload_to_roblox)
@@ -219,13 +226,11 @@ def upload_clothing():
         
         wait_for_image(wait_till_image)
         pyautogui.hotkey('ctrl', 'w')
-        
 
-    except TimeoutError as e:
-        error_log(f"Error: {e}")
-    finally:
         upload_log(file_to_delete)
         pyperclip.copy(file_to_delete)
         delete_clothing_image()
         file_to_delete = None
-        print("Cleared the file_to_delete variable.")
+
+    except TimeoutError as e:
+        error_log(f"Error: {e}")
